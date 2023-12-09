@@ -45,17 +45,16 @@ NTP_BadColor = tuple(map(int, config['Color']['NTP_Bad_Color'].split(',')))
 digiclocksize  = int(bg.get_height()/4.5)
 digiclockspace = int(bg.get_height()/10.5)
 dotsize = int(bg.get_height()/90)
-hradius = bg.get_height()/2.5
-secradius = hradius - (bg.get_height()/26)
+hour_radius = bg.get_height()/2.5
+seconds_radius = hour_radius - (bg.get_height()/26)
 
 # Coordinates of items on display
 # xclockpos = int(bg.get_width()*0.2875)
-xclockpos = int(bg.get_width()/2.5)
+xclockpos = int(bg.get_width()/2)
 ycenter = int(bg.get_height()/2)
 xcenter = int(bg.get_width()/2)
 
-# # Set relative indicator box 'x' location
-
+# Set relative indicator box 'x' location
 
 txthmy = int(ycenter)
 
@@ -63,23 +62,23 @@ txthmy = int(ycenter)
 clockfont = pygame.font.Font(None,digiclocksize)
 ipFont = pygame.font.Font(None, 30)
     
-def paraeqsmx(smx):
-    return xclockpos-(int(secradius*(math.cos(math.radians((smx)+90)))))
+def polar_to_X_seconds(angle):
+    return xclockpos-(int(seconds_radius*(math.cos(math.radians((angle)+90)))))
 
-def paraeqsmy(smy):
-    return ycenter-(int(secradius*(math.sin(math.radians((smy)+90)))))
+def polar_to_Y_seconds(angle):
+    return ycenter-(int(seconds_radius*(math.sin(math.radians((angle)+90)))))
 
 # Equations for hour markers
-def paraeqshx(shx):
-    return xclockpos-(int(hradius*(math.cos(math.radians((shx)+90)))))
+def polar_to_X_hours(angle):
+    return xclockpos-(int(hour_radius*(math.cos(math.radians((angle)+90)))))
 
-def paraeqshy(shy):
-    return ycenter-(int(hradius*(math.sin(math.radians((shy)+90)))))
+def polar_to_Y_hours(angle):
+    return ycenter-(int(hour_radius*(math.sin(math.radians((angle)+90)))))
 
 ipTxt = ipFont.render(ipAddress, True, ipTxtColor)
 
 # Logo position
-imageXY = image.get_rect(centerx = xclockpos, centery = ycenter + int(secradius / 2))
+imageXY = image.get_rect(centerx = xclockpos, centery = ycenter + int(seconds_radius / 2))
 
 ######################### Main program loop. ####################################
 
@@ -88,36 +87,27 @@ while True :
 
     bg.fill(bgcolor)
 
-    # Retrieve seconds and turn them into integers
-    # int_seconds = int(time.strftime("%S",time.localtime(time.time())))
-
-    # To get the dots in sync with the seconds
-    
-
     current_time = datetime.datetime.now()
     float_seconds = float(current_time.strftime('%S.%f'))
     int_seconds = int(current_time.strftime('%S'))
     retrievehm = (current_time.strftime('%I:%M:%S'))
     secdeg  = (int_seconds + 1) * 6
   
-
     # Draw second markers
-    smx=smy=0
-    while smx < secdeg:
-        # pygame.draw.circle(bg, clockcolor, (paraeqsmx(smx),paraeqsmy(smy)),dotsize)
-        pygame.gfxdraw.aacircle(bg, paraeqsmx(smx), paraeqsmy(smy), dotsize, clockcolor)
-        pygame.gfxdraw.filled_circle(bg, paraeqsmx(smx), paraeqsmy(smy), dotsize, clockcolor)
-        smy += 6  # 6 Degrees per second
-        smx += 6
+    angle = 0
+    while angle < secdeg:
+        # pygame.draw.circle(bg, clockcolor, (polar_to_X_seconds(smx),polar_to_Y_seconds(smy)),dotsize)
+        pygame.gfxdraw.aacircle(bg, polar_to_X_seconds(angle), polar_to_Y_seconds(angle), dotsize, clockcolor)
+        pygame.gfxdraw.filled_circle(bg, polar_to_X_seconds(angle), polar_to_Y_seconds(angle), dotsize, clockcolor)
+        angle += 6  # 6 Degrees per second
 
     # Draw hour markers
-    shx=shy=0
-    while shx < 360:
-        # pygame.draw.circle(bg, hourcolor, (paraeqshx(shx),paraeqshy(shy)),dotsize)
-        pygame.gfxdraw.aacircle(bg, paraeqshx(shx), paraeqshy(shy), dotsize, hourcolor)
-        pygame.gfxdraw.filled_circle(bg, paraeqshx(shx), paraeqshy(shy), dotsize, hourcolor)
-        shy += 30  # 30 Degrees per hour
-        shx += 30
+    angle = 0
+    while angle < 360:
+        # pygame.draw.circle(bg, hourcolor, (polar_to_X_hours(shx),polar_to_Y_hours(shy)),dotsize)
+        pygame.gfxdraw.aacircle(bg, polar_to_X_hours(angle), polar_to_Y_hours(angle), dotsize, hourcolor)
+        pygame.gfxdraw.filled_circle(bg, polar_to_X_hours(angle), polar_to_Y_hours(angle), dotsize, hourcolor)
+        angle += 30  # 30 Degrees per hour
 
     # Retrieve time for digital clock
     # retrievehm    = time.strftime("%I:%M:%S",time.localtime(time.time()))
@@ -151,12 +141,12 @@ while True :
     # Display IP address
     bg.blit(ipTxt, ipTxt.get_rect())
 
-    smx = smy = float_seconds * 6
-    pygame.gfxdraw.aapolygon(bg, [(paraeqsmx(smx), paraeqsmy(smy)), (xclockpos, ycenter), (xclockpos, ycenter)], clockcolor)
+    angle = float_seconds * 6
+    pygame.gfxdraw.aapolygon(bg, [(polar_to_X_seconds(angle), polar_to_Y_seconds(angle)), (xclockpos, ycenter), (xclockpos, ycenter)], clockcolor)
 
+    pygame.gfxdraw.filled_trigon(bg, xclockpos - 510, ycenter, xclockpos - 500, ycenter + int_seconds, xclockpos - 490, ycenter, clockcolor)
     pygame.gfxdraw.aatrigon(bg, xclockpos - 510, ycenter, xclockpos - 500, ycenter + int_seconds, xclockpos - 490, ycenter, clockcolor)
 
-    # time.sleep(0.04)
     pygame.time.Clock().tick(60)
 
     for event in pygame.event.get() :
