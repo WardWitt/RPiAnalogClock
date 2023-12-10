@@ -1,8 +1,17 @@
-import pygame, sys, time, os, math, socket, configparser, logging, datetime
+import pygame
+import sys
+import time
+import os
+import math
+import socket
+import configparser
+import logging
+import datetime
 
 import pygame.gfxdraw
 
-logging.basicConfig(level=logging.WARNING, filename='RPiclock.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s - %(asctime)s')
+logging.basicConfig(level=logging.WARNING, filename='RPiclock.log', filemode='w',
+                    format='%(name)s - %(levelname)s - %(message)s - %(asctime)s')
 
 # get our base path
 base_dir = os.path.dirname(os.path.realpath(__file__))
@@ -27,7 +36,8 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(('8.8.8.8', 0))
 ipAddress = s.getsockname()[0]
 
-bg = pygame.display.set_mode(tuple(map(int, config['Display']['Resolution'].split(','))))
+bg = pygame.display.set_mode(
+    tuple(map(int, config['Display']['Resolution'].split(','))))
 pygame.mouse.set_visible(False)
 
 image = pygame.image.load(config['Logo']['Logo_Image'])
@@ -36,7 +46,7 @@ image = pygame.image.load(config['Logo']['Logo_Image'])
 bgcolor = tuple(map(int, config['Color']['Background_Color'].split(',')))
 clockcolor = tuple(map(int, config['Color']['Second_Color'].split(',')))
 hourcolor = tuple(map(int, config['Color']['Hour_Color'].split(',')))
-white = (255, 255 ,255, 255)
+white = (255, 255, 255, 255)
 black = (0, 0, 0, 255)
 
 ipTxtColor = tuple(map(int, config['Color']['IP_Address_Color'].split(',')))
@@ -44,7 +54,7 @@ NTP_GoodColor = tuple(map(int, config['Color']['NTP_Good_Color'].split(',')))
 NTP_BadColor = tuple(map(int, config['Color']['NTP_Bad_Color'].split(',')))
 
 # Scaling to the right size for the clock display
-digiclocksize  = int(bg.get_height()/4.5)
+digiclocksize = int(bg.get_height()/4.5)
 digiclockspace = int(bg.get_height()/10.5)
 dotsize = int(bg.get_height()/90)
 hour_radius = bg.get_height()/2.5
@@ -60,22 +70,28 @@ xcenter = int(bg.get_width()/2)
 
 txthmy = int(ycenter)
 
-# Fonts  
-clockfont = pygame.font.Font(None,digiclocksize)
+# Fonts
+clockfont = pygame.font.Font(None, digiclocksize)
 ipFont = pygame.font.Font(None, 30)
-    
+
+
 def polar_to_X_seconds(angle):
     return xclockpos-(int(seconds_radius*(math.cos(math.radians((angle)+90)))))
+
 
 def polar_to_Y_seconds(angle):
     return ycenter-(int(seconds_radius*(math.sin(math.radians((angle)+90)))))
 
 # Equations for hour markers
+
+
 def polar_to_X_hours(angle):
     return xclockpos-(int(hour_radius*(math.cos(math.radians((angle)+90)))))
 
+
 def polar_to_Y_hours(angle):
     return ycenter-(int(hour_radius*(math.sin(math.radians((angle)+90)))))
+
 
 def rotate(origin, points, angle):
     ox, oy = origin
@@ -83,25 +99,32 @@ def rotate(origin, points, angle):
     for point in points:
         px, py = point
 
-        qx = ox + math.cos(math.radians(angle)) * (px - ox) - math.sin(math.radians(angle)) * (py - oy)
-        qy = oy + math.sin(math.radians(angle)) * (px - ox) + math.cos(math.radians(angle)) * (py - oy)
+        qx = ox + math.cos(math.radians(angle)) * (px - ox) - \
+            math.sin(math.radians(angle)) * (py - oy)
+        qy = oy + math.sin(math.radians(angle)) * (px - ox) + \
+            math.cos(math.radians(angle)) * (py - oy)
         rotatedPoints.append((qx, qy))
 
     return rotatedPoints
 
+
 ipTxt = ipFont.render(ipAddress, True, ipTxtColor)
 
 # Logo position
-imageXY = image.get_rect(centerx = xclockpos, centery = ycenter + int(seconds_radius / 2))
+imageXY = image.get_rect(
+    centerx=xclockpos, centery=ycenter + int(seconds_radius / 2))
 
 
-secondHand = [(xclockpos + 10, ycenter + 30), (xclockpos - 10, ycenter + 30), (xclockpos, ycenter - seconds_radius + 20)]
-minuteHand = [(xclockpos + 10, ycenter), (xclockpos - 10, ycenter), (xclockpos, ycenter - seconds_radius + 50)]
-hourHand = [(xclockpos + 10, ycenter), (xclockpos - 10, ycenter), (xclockpos, ycenter - seconds_radius + 100)]
+secondHand = [(xclockpos + 10, ycenter + 30), (xclockpos - 10,
+                                               ycenter + 30), (xclockpos, ycenter - seconds_radius + 20)]
+minuteHand = [(xclockpos + 10, ycenter), (xclockpos - 10, ycenter),
+              (xclockpos, ycenter - seconds_radius + 50)]
+hourHand = [(xclockpos + 10, ycenter), (xclockpos - 10, ycenter),
+            (xclockpos, ycenter - seconds_radius + 100)]
 
 ######################### Main program loop. ####################################
 
-while True :
+while True:
     pygame.display.update()
 
     bg.fill(bgcolor)
@@ -112,7 +135,7 @@ while True :
     int_minutes = int(current_time.strftime('%M'))
     int_hours = int(current_time.strftime('%I'))
     string_time = (current_time.strftime('%I:%M:%S'))
-    secdeg  = (int_seconds + 1) * 6
+    secdeg = (int_seconds + 1) * 6
     secondAngle = float_seconds * 6
     minuteAngle = int_minutes * 6 + int_seconds / 10
     hourAngle = int_hours * 30 + int_minutes / 2
@@ -132,16 +155,20 @@ while True :
     angle = 0
     while angle < secdeg:
         # pygame.draw.circle(bg, clockcolor, (polar_to_X_seconds(smx),polar_to_Y_seconds(smy)),dotsize)
-        pygame.gfxdraw.filled_circle(bg, polar_to_X_seconds(angle), polar_to_Y_seconds(angle), dotsize, clockcolor)
-        pygame.gfxdraw.aacircle(bg, polar_to_X_seconds(angle), polar_to_Y_seconds(angle), dotsize, clockcolor)
+        pygame.gfxdraw.filled_circle(bg, polar_to_X_seconds(
+            angle), polar_to_Y_seconds(angle), dotsize, clockcolor)
+        pygame.gfxdraw.aacircle(bg, polar_to_X_seconds(
+            angle), polar_to_Y_seconds(angle), dotsize, clockcolor)
         angle += 6  # 6 Degrees per second
 
     # Draw hour markers
     angle = 0
     while angle < 360:
         # pygame.draw.circle(bg, hourcolor, (polar_to_X_hours(shx),polar_to_Y_hours(shy)),dotsize)
-        pygame.gfxdraw.filled_circle(bg, polar_to_X_hours(angle), polar_to_Y_hours(angle), dotsize, hourcolor)
-        pygame.gfxdraw.aacircle(bg, polar_to_X_hours(angle), polar_to_Y_hours(angle), dotsize, hourcolor)
+        pygame.gfxdraw.filled_circle(bg, polar_to_X_hours(
+            angle), polar_to_Y_hours(angle), dotsize, hourcolor)
+        pygame.gfxdraw.aacircle(bg, polar_to_X_hours(
+            angle), polar_to_Y_hours(angle), dotsize, hourcolor)
         angle += 30  # 30 Degrees per hour
 
     # NTP warning flag
@@ -151,27 +178,35 @@ while True :
         lastTimeUpdate = time.time() - float(chronyc[3])
         if lastTimeUpdate < 3600:
             timeStatus = True
-            logging.info('Last valad time update %f seconds ago', lastTimeUpdate)
+            logging.info('Last valad time update %f seconds ago',
+                         lastTimeUpdate)
         else:
             timeStatus = False
-            logging.warning('!!! - Last valad time update %f seconds ago - !!!', lastTimeUpdate)
+            logging.warning(
+                '!!! - Last valad time update %f seconds ago - !!!', lastTimeUpdate)
         counter = 0
 
     if timeStatus:
-        pygame.gfxdraw.aacircle(bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_GoodColor)
-        pygame.gfxdraw.filled_circle(bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_GoodColor)
+        pygame.gfxdraw.aacircle(
+            bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_GoodColor)
+        pygame.gfxdraw.filled_circle(
+            bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_GoodColor)
     else:
-        pygame.gfxdraw.aacircle(bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_BadColor)
-        pygame.gfxdraw.filled_circle(bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_BadColor)
+        pygame.gfxdraw.aacircle(
+            bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_BadColor)
+        pygame.gfxdraw.filled_circle(
+            bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_BadColor)
 
     # Render our digital clock
     digital_clock = clockfont.render(string_time, True, white)
-    digital_clock_ds = clockfont.render(string_time, True, black) # Digital clock with a drop shadow
-    txtposhm = digital_clock.get_rect(centerx = xclockpos, centery = txthmy)
+    # Digital clock with a drop shadow
+    digital_clock_ds = clockfont.render(string_time, True, black)
+    txtposhm = digital_clock.get_rect(centerx=xclockpos, centery=txthmy)
 
     # Display the normal screen
-    bg.blit(digital_clock_ds, txtposhm.move(+2, +2)) # Insert our drop shadow first
-    bg.blit(digital_clock, txtposhm) # Now add the digital clock
+    # Insert our drop shadow first
+    bg.blit(digital_clock_ds, txtposhm.move(+2, +2))
+    bg.blit(digital_clock, txtposhm)  # Now add the digital clock
 
     # Display our logo
     bg.blit(image, imageXY)
@@ -183,12 +218,12 @@ while True :
     pygame.time.Clock().tick(60)
 
     for event in pygame.event.get():
-         if event.type == QUIT:
-             pygame.quit()
-             sys.exit()
-         # Pressing q+t to exit
-         elif event.type == KEYDOWN:
-             if event.key == K_q and K_t:
-                 pygame.quit()
-       #          GPIO.cleanup()
-                 sys.exit()
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        # Pressing q+t to exit
+        elif event.type == KEYDOWN:
+            if event.key == K_q and K_t:
+                pygame.quit()
+      #          GPIO.cleanup()
+                sys.exit()
