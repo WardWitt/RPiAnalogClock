@@ -161,8 +161,8 @@ while True :
         pygame.gfxdraw.aacircle(bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_GoodColor)
         pygame.gfxdraw.filled_circle(bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_GoodColor)
     else:
-        pygame.gfxdraw.aacircle(bg, dotsize + 5, bg.get_height()- dotsize - 5, dotsize, NTP_BadColor)
-        pygame.gfxdraw.filled_circle(bg, dotsize + 5, bg.get_height()v- dotsize - 5, dotsize, NTP_BadColor)
+        pygame.gfxdraw.aacircle(bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_BadColor)
+        pygame.gfxdraw.filled_circle(bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_BadColor)
 
     # Render our digital clock
     digital_clock = clockfont.render(string_time, True, white)
