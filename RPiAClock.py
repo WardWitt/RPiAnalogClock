@@ -37,6 +37,7 @@ bgcolor = tuple(map(int, config['Color']['Background_Color'].split(',')))
 clockcolor = tuple(map(int, config['Color']['Second_Color'].split(',')))
 hourcolor = tuple(map(int, config['Color']['Hour_Color'].split(',')))
 white = (255, 255 ,255, 255)
+black = (0, 0, 0, 255)
 
 ipTxtColor = tuple(map(int, config['Color']['IP_Address_Color'].split(',')))
 NTP_GoodColor = tuple(map(int, config['Color']['NTP_Good_Color'].split(',')))
@@ -110,7 +111,7 @@ while True :
     int_seconds = int(current_time.strftime('%S'))
     int_minutes = int(current_time.strftime('%M'))
     int_hours = int(current_time.strftime('%I'))
-    retrievehm = (current_time.strftime('%I:%M:%S'))
+    string_time = (current_time.strftime('%I:%M:%S'))
     secdeg  = (int_seconds + 1) * 6
     secondAngle = float_seconds * 6
     minuteAngle = int_minutes * 6 + int_seconds / 10
@@ -143,11 +144,6 @@ while True :
         pygame.gfxdraw.aacircle(bg, polar_to_X_hours(angle), polar_to_Y_hours(angle), dotsize, hourcolor)
         angle += 30  # 30 Degrees per hour
 
-    # Retrieve time for digital clock
-    # retrievehm    = time.strftime("%I:%M:%S",time.localtime(time.time()))
-    digiclockhm   = clockfont.render(retrievehm,True,white)
-    txtposhm      = digiclockhm.get_rect(centerx=xclockpos,centery=txthmy)
-
     # NTP warning flag
     counter += 1
     if counter == 3600:
@@ -162,32 +158,28 @@ while True :
         counter = 0
 
     if timeStatus:
-        pygame.gfxdraw.aacircle(bg, dotsize + 5, bg.get_height()- dotsize - 5, dotsize, NTP_GoodColor)
-        pygame.gfxdraw.filled_circle(bg, dotsize + 5, bg.get_height()- dotsize - 5, dotsize, NTP_GoodColor)
+        pygame.gfxdraw.aacircle(bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_GoodColor)
+        pygame.gfxdraw.filled_circle(bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_GoodColor)
     else:
         pygame.gfxdraw.aacircle(bg, dotsize + 5, bg.get_height()- dotsize - 5, dotsize, NTP_BadColor)
-        pygame.gfxdraw.filled_circle(bg, dotsize + 5, bg.get_height()- dotsize - 5, dotsize, NTP_BadColor)
+        pygame.gfxdraw.filled_circle(bg, dotsize + 5, bg.get_height()v- dotsize - 5, dotsize, NTP_BadColor)
 
-    # Render the normal screen
-    bg.blit(digiclockhm, txtposhm)
+    # Render our digital clock
+    digital_clock = clockfont.render(string_time, True, white)
+    digital_clock_ds = clockfont.render(string_time, True, black) # Digital clock with a drop shadow
+    txtposhm = digital_clock.get_rect(centerx = xclockpos, centery = txthmy)
+
+    # Display the normal screen
+    bg.blit(digital_clock_ds, txtposhm.move(+2, +2)) # Insert our drop shadow first
+    bg.blit(digital_clock, txtposhm) # Now add the digital clock
+
+    # Display our logo
     bg.blit(image, imageXY)
 
     # Display IP address
     bg.blit(ipTxt, ipTxt.get_rect())
 
-    
-
-    # secondhandend = (polar_to_X_seconds(angle), polar_to_Y_seconds(angle))
-    # pygame.gfxdraw.filled_polygon(bg, [secondhandend, (xclockpos, ycenter + 10), (xclockpos, ycenter - 10)], clockcolor)
-    # pygame.gfxdraw.aapolygon(bg, [secondhandend, (xclockpos, ycenter + 10), (xclockpos, ycenter - 10)], clockcolor)
-
-    # triangleOrigin = secondhandend
-    # trianglePoints = [(xclockpos - 50, ycenter), (xclockpos, ycenter + 50), (xclockpos + 50, ycenter)]
-    # triangle[0] = rotate(triangleOrigin, trianglePoints[0], float_seconds * 6)
-    # triangle[1] = rotate(triangleOrigin, trianglePoints[1], float_seconds * 6)
-    # triangle[2] = rotate(triangleOrigin, trianglePoints[2], float_seconds * 6)
-    # pygame.gfxdraw.aapolygon(bg, triangle, clockcolor)
-
+    # This sets the frame rate
     pygame.time.Clock().tick(60)
 
     for event in pygame.event.get():
