@@ -114,7 +114,7 @@ while True :
     secdeg  = (int_seconds + 1) * 6
     secondAngle = float_seconds * 6
     minuteAngle = int_minutes * 6 + int_seconds / 10
-    hourAngle = int_hours * 30 + int_minutes / 5
+    hourAngle = int_hours * 30 + int_minutes / 2
 
     rotatedSecondHand = rotate((xclockpos, ycenter), secondHand, secondAngle)
     rotatedMinuteHand = rotate((xclockpos, ycenter), minuteHand, minuteAngle)
