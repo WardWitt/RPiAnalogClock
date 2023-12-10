@@ -36,6 +36,7 @@ image = pygame.image.load(config['Logo']['Logo_Image'])
 bgcolor = tuple(map(int, config['Color']['Background_Color'].split(',')))
 clockcolor = tuple(map(int, config['Color']['Second_Color'].split(',')))
 hourcolor = tuple(map(int, config['Color']['Hour_Color'].split(',')))
+white = (255, 255 ,255, 255)
 
 ipTxtColor = tuple(map(int, config['Color']['IP_Address_Color'].split(',')))
 NTP_GoodColor = tuple(map(int, config['Color']['NTP_Good_Color'].split(',')))
@@ -75,13 +76,17 @@ def polar_to_X_hours(angle):
 def polar_to_Y_hours(angle):
     return ycenter-(int(hour_radius*(math.sin(math.radians((angle)+90)))))
 
-def rotate(origin, point, angle):
+def rotate(origin, points, angle):
     ox, oy = origin
-    px, py = point
+    rotatedPoints = []
+    for point in points:
+        px, py = point
 
-    qx = ox + math.cos(math.radians(angle)) * (px - ox) - math.sin(math.radians(angle)) * (py - oy)
-    qy = oy + math.sin(math.radians(angle)) * (px - ox) + math.cos(math.radians(angle)) * (py - oy)
-    return qx, qy
+        qx = ox + math.cos(math.radians(angle)) * (px - ox) - math.sin(math.radians(angle)) * (py - oy)
+        qy = oy + math.sin(math.radians(angle)) * (px - ox) + math.cos(math.radians(angle)) * (py - oy)
+        rotatedPoints.append((qx, qy))
+
+    return rotatedPoints
 
 ipTxt = ipFont.render(ipAddress, True, ipTxtColor)
 
@@ -89,8 +94,9 @@ ipTxt = ipFont.render(ipAddress, True, ipTxtColor)
 imageXY = image.get_rect(centerx = xclockpos, centery = ycenter + int(seconds_radius / 2))
 
 
-secondHand = [(xclockpos + 10, ycenter), (xclockpos - 10, ycenter), (xclockpos, ycenter - seconds_radius + 20)]
-transformedSecondHand = [1,2,3]
+secondHand = [(xclockpos + 10, ycenter + 30), (xclockpos - 10, ycenter + 30), (xclockpos, ycenter - seconds_radius + 20)]
+minuteHand = [(xclockpos + 10, ycenter), (xclockpos - 10, ycenter), (xclockpos, ycenter - seconds_radius + 50)]
+hourHand = [(xclockpos + 10, ycenter), (xclockpos - 10, ycenter), (xclockpos, ycenter - seconds_radius + 100)]
 
 ######################### Main program loop. ####################################
 
@@ -102,36 +108,44 @@ while True :
     current_time = datetime.datetime.now()
     float_seconds = float(current_time.strftime('%S.%f'))
     int_seconds = int(current_time.strftime('%S'))
+    int_minutes = int(current_time.strftime('%M'))
+    int_hours = int(current_time.strftime('%I'))
     retrievehm = (current_time.strftime('%I:%M:%S'))
     secdeg  = (int_seconds + 1) * 6
-    angle = float_seconds * 6
+    secondAngle = float_seconds * 6
+    minuteAngle = int_minutes * 6 + int_seconds / 10
+    hourAngle = int_hours * 30 + int_minutes / 5
 
-    transformedSecondHand[0] = rotate((xclockpos, ycenter), secondHand[0], angle)
-    transformedSecondHand[1] = rotate((xclockpos, ycenter), secondHand[1], angle)
-    transformedSecondHand[2] = rotate((xclockpos, ycenter), secondHand[2], angle)
-    pygame.gfxdraw.filled_polygon(bg, transformedSecondHand, clockcolor)
-    pygame.gfxdraw.aapolygon(bg, transformedSecondHand, clockcolor)
+    rotatedSecondHand = rotate((xclockpos, ycenter), secondHand, secondAngle)
+    rotatedMinuteHand = rotate((xclockpos, ycenter), minuteHand, minuteAngle)
+    rotatedHourHand = rotate((xclockpos, ycenter), hourHand, hourAngle)
 
+    pygame.gfxdraw.filled_polygon(bg, rotatedMinuteHand, hourcolor)
+    pygame.gfxdraw.aapolygon(bg, rotatedMinuteHand, hourcolor)
+    pygame.gfxdraw.filled_polygon(bg, rotatedHourHand, hourcolor)
+    pygame.gfxdraw.aapolygon(bg, rotatedHourHand, hourcolor)
+    pygame.gfxdraw.filled_polygon(bg, rotatedSecondHand, clockcolor)
+    pygame.gfxdraw.aapolygon(bg, rotatedSecondHand, clockcolor)
 
     # Draw second markers
     angle = 0
     while angle < secdeg:
         # pygame.draw.circle(bg, clockcolor, (polar_to_X_seconds(smx),polar_to_Y_seconds(smy)),dotsize)
-        pygame.gfxdraw.aacircle(bg, polar_to_X_seconds(angle), polar_to_Y_seconds(angle), dotsize, clockcolor)
         pygame.gfxdraw.filled_circle(bg, polar_to_X_seconds(angle), polar_to_Y_seconds(angle), dotsize, clockcolor)
+        pygame.gfxdraw.aacircle(bg, polar_to_X_seconds(angle), polar_to_Y_seconds(angle), dotsize, clockcolor)
         angle += 6  # 6 Degrees per second
 
     # Draw hour markers
     angle = 0
     while angle < 360:
         # pygame.draw.circle(bg, hourcolor, (polar_to_X_hours(shx),polar_to_Y_hours(shy)),dotsize)
-        pygame.gfxdraw.aacircle(bg, polar_to_X_hours(angle), polar_to_Y_hours(angle), dotsize, hourcolor)
         pygame.gfxdraw.filled_circle(bg, polar_to_X_hours(angle), polar_to_Y_hours(angle), dotsize, hourcolor)
+        pygame.gfxdraw.aacircle(bg, polar_to_X_hours(angle), polar_to_Y_hours(angle), dotsize, hourcolor)
         angle += 30  # 30 Degrees per hour
 
     # Retrieve time for digital clock
     # retrievehm    = time.strftime("%I:%M:%S",time.localtime(time.time()))
-    digiclockhm   = clockfont.render(retrievehm,True,hourcolor)
+    digiclockhm   = clockfont.render(retrievehm,True,white)
     txtposhm      = digiclockhm.get_rect(centerx=xclockpos,centery=txthmy)
 
     # NTP warning flag
