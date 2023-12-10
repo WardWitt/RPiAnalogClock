@@ -87,7 +87,11 @@ ipTxt = ipFont.render(ipAddress, True, ipTxtColor)
 
 # Logo position
 imageXY = image.get_rect(centerx = xclockpos, centery = ycenter + int(seconds_radius / 2))
-triangle = [1,2,3]
+
+
+secondHand = [(xclockpos + 10, ycenter), (xclockpos - 10, ycenter), (xclockpos, ycenter - seconds_radius + 20)]
+transformedSecondHand = [1,2,3]
+
 ######################### Main program loop. ####################################
 
 while True :
@@ -100,7 +104,15 @@ while True :
     int_seconds = int(current_time.strftime('%S'))
     retrievehm = (current_time.strftime('%I:%M:%S'))
     secdeg  = (int_seconds + 1) * 6
-  
+    angle = float_seconds * 6
+
+    transformedSecondHand[0] = rotate((xclockpos, ycenter), secondHand[0], angle)
+    transformedSecondHand[1] = rotate((xclockpos, ycenter), secondHand[1], angle)
+    transformedSecondHand[2] = rotate((xclockpos, ycenter), secondHand[2], angle)
+    pygame.gfxdraw.filled_polygon(bg, transformedSecondHand, clockcolor)
+    pygame.gfxdraw.aapolygon(bg, transformedSecondHand, clockcolor)
+
+
     # Draw second markers
     angle = 0
     while angle < secdeg:
@@ -149,11 +161,12 @@ while True :
     # Display IP address
     bg.blit(ipTxt, ipTxt.get_rect())
 
-    angle = float_seconds * 6
-    secondhandend = (polar_to_X_seconds(angle), polar_to_Y_seconds(angle))
-    pygame.gfxdraw.filled_polygon(bg, [secondhandend, (xclockpos, ycenter + 10), (xclockpos, ycenter - 10)], clockcolor)
-    pygame.gfxdraw.aapolygon(bg, [secondhandend, (xclockpos, ycenter + 10), (xclockpos, ycenter - 10)], clockcolor)
     
+
+    # secondhandend = (polar_to_X_seconds(angle), polar_to_Y_seconds(angle))
+    # pygame.gfxdraw.filled_polygon(bg, [secondhandend, (xclockpos, ycenter + 10), (xclockpos, ycenter - 10)], clockcolor)
+    # pygame.gfxdraw.aapolygon(bg, [secondhandend, (xclockpos, ycenter + 10), (xclockpos, ycenter - 10)], clockcolor)
+
     # triangleOrigin = secondhandend
     # trianglePoints = [(xclockpos - 50, ycenter), (xclockpos, ycenter + 50), (xclockpos + 50, ycenter)]
     # triangle[0] = rotate(triangleOrigin, trianglePoints[0], float_seconds * 6)
