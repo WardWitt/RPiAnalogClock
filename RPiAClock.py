@@ -75,11 +75,19 @@ def polar_to_X_hours(angle):
 def polar_to_Y_hours(angle):
     return ycenter-(int(hour_radius*(math.sin(math.radians((angle)+90)))))
 
+def rotate(origin, point, angle):
+    ox, oy = origin
+    px, py = point
+
+    qx = ox + math.cos(math.radians(angle)) * (px - ox) - math.sin(math.radians(angle)) * (py - oy)
+    qy = oy + math.sin(math.radians(angle)) * (px - ox) + math.cos(math.radians(angle)) * (py - oy)
+    return qx, qy
+
 ipTxt = ipFont.render(ipAddress, True, ipTxtColor)
 
 # Logo position
 imageXY = image.get_rect(centerx = xclockpos, centery = ycenter + int(seconds_radius / 2))
-
+triangle = [1,2,3]
 ######################### Main program loop. ####################################
 
 while True :
@@ -142,14 +150,20 @@ while True :
     bg.blit(ipTxt, ipTxt.get_rect())
 
     angle = float_seconds * 6
-    pygame.gfxdraw.aapolygon(bg, [(polar_to_X_seconds(angle), polar_to_Y_seconds(angle)), (xclockpos, ycenter), (xclockpos, ycenter)], clockcolor)
-
-    pygame.gfxdraw.filled_trigon(bg, xclockpos - 510, ycenter, xclockpos - 500, ycenter + int_seconds, xclockpos - 490, ycenter, clockcolor)
-    pygame.gfxdraw.aatrigon(bg, xclockpos - 510, ycenter, xclockpos - 500, ycenter + int_seconds, xclockpos - 490, ycenter, clockcolor)
+    secondhandend = (polar_to_X_seconds(angle), polar_to_Y_seconds(angle))
+    pygame.gfxdraw.filled_polygon(bg, [secondhandend, (xclockpos, ycenter + 10), (xclockpos, ycenter - 10)], clockcolor)
+    pygame.gfxdraw.aapolygon(bg, [secondhandend, (xclockpos, ycenter + 10), (xclockpos, ycenter - 10)], clockcolor)
+    
+    # triangleOrigin = secondhandend
+    # trianglePoints = [(xclockpos - 50, ycenter), (xclockpos, ycenter + 50), (xclockpos + 50, ycenter)]
+    # triangle[0] = rotate(triangleOrigin, trianglePoints[0], float_seconds * 6)
+    # triangle[1] = rotate(triangleOrigin, trianglePoints[1], float_seconds * 6)
+    # triangle[2] = rotate(triangleOrigin, trianglePoints[2], float_seconds * 6)
+    # pygame.gfxdraw.aapolygon(bg, triangle, clockcolor)
 
     pygame.time.Clock().tick(60)
 
-    for event in pygame.event.get() :
+    for event in pygame.event.get():
          if event.type == QUIT:
              pygame.quit()
              sys.exit()
