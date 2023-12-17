@@ -62,17 +62,20 @@ NTP_GoodColor = tuple(map(int, config["Color"]["NTP_Good_Color"].split(",")))
 NTP_BadColor = tuple(map(int, config["Color"]["NTP_Bad_Color"].split(",")))
 
 # Scaling to the right size for the clock display
-digiclocksize = int(bg.get_height() / 4.5)
-digiclockspace = int(bg.get_height() / 10.5)
-dotsize = int(bg.get_height() / 90)
-hour_radius = bg.get_height() / 2.5
-seconds_radius = hour_radius - (bg.get_height() / 26)
+displayHeight = bg.get_height()
+displayWidth = bg.get_width()
+digiclocksize = int(displayHeight / 4.5)
+digiclockspace = int(displayHeight / 10.5)
+dotsize = int(displayHeight / 90)
+hour_radius = displayHeight / 2.5
+seconds_radius = hour_radius - (displayHeight / 26)
+handWidth = (displayHeight * 0.02)
 
 # Coordinates of items on display
 # xclockpos = int(bg.get_width()*0.2875)
-xclockpos = int(bg.get_width() / 2)
-ycenter = int(bg.get_height() / 2)
-xcenter = int(bg.get_width() / 2)
+xclockpos = int(displayWidth / 2)
+ycenter = int(displayHeight / 2)
+xcenter = int(displayWidth / 2)
 
 # Set relative indicator box 'x' location
 
@@ -129,21 +132,24 @@ ipTxt = ipFont.render(ipAddress, True, ipTxtColor)
 imageXY = image.get_rect(
     centerx=xclockpos, centery=ycenter + int(seconds_radius / 2))
 
-
 secondHand = [
-    (xclockpos + 10, ycenter + 30),
-    (xclockpos - 10, ycenter + 30),
-    (xclockpos, ycenter - seconds_radius + 20),
+    (xclockpos + handWidth / 2, ycenter - handWidth * 1.5),
+    (xclockpos - handWidth / 2, ycenter - handWidth * 1.5),
+    (xclockpos, ycenter + seconds_radius * 0.95)
 ]
 minuteHand = [
-    (xclockpos + 10, ycenter),
-    (xclockpos - 10, ycenter),
-    (xclockpos, ycenter - seconds_radius + 50),
+    (xclockpos + handWidth / 2, ycenter),
+    (xclockpos - handWidth / 2, ycenter),
+    (xclockpos - handWidth / 4, ycenter + seconds_radius * 0.8),
+    (xclockpos, ycenter + seconds_radius * 0.85),
+    (xclockpos + handWidth / 4, ycenter + seconds_radius * 0.8)
 ]
 hourHand = [
-    (xclockpos + 10, ycenter),
-    (xclockpos - 10, ycenter),
-    (xclockpos, ycenter - seconds_radius + 100),
+    (xclockpos + handWidth / 2, ycenter),
+    (xclockpos - handWidth / 2, ycenter),
+    (xclockpos - handWidth / 4, ycenter + seconds_radius * 0.6),
+    (xclockpos, ycenter + seconds_radius * 0.65),
+    (xclockpos + handWidth / 4, ycenter + seconds_radius * 0.6)
 ]
 
 ######################### Main program loop. ####################################
@@ -168,14 +174,16 @@ while True:
     minuteAngle = int_minutes * 6 + int_seconds / 10
     hourAngle = int_hours * 30 + int_minutes / 2
 
-    rotatedSecondHand = rotate((xclockpos, ycenter), secondHand, secondAngle)
-    rotatedMinuteHand = rotate((xclockpos, ycenter), minuteHand, minuteAngle)
-    rotatedHourHand = rotate((xclockpos, ycenter), hourHand, hourAngle)
+    rotatedSecondHand = rotate((xclockpos, ycenter), secondHand, secondAngle + 180)
+    rotatedMinuteHand = rotate((xclockpos, ycenter), minuteHand, minuteAngle + 180)
+    rotatedHourHand = rotate((xclockpos, ycenter), hourHand, hourAngle + 180)
+
+    pygame.gfxdraw.filled_polygon(bg, rotatedHourHand, hourHandColor)
+    pygame.gfxdraw.aapolygon(bg, rotatedHourHand, hourHandColor)
 
     pygame.gfxdraw.filled_polygon(bg, rotatedMinuteHand, minuteHandColor)
     pygame.gfxdraw.aapolygon(bg, rotatedMinuteHand, minuteHandColor)
-    pygame.gfxdraw.filled_polygon(bg, rotatedHourHand, hourHandColor)
-    pygame.gfxdraw.aapolygon(bg, rotatedHourHand, hourHandColor)
+
     pygame.gfxdraw.filled_polygon(bg, rotatedSecondHand, secondHandColor)
     pygame.gfxdraw.aapolygon(bg, rotatedSecondHand, secondHandColor)
 
@@ -229,17 +237,17 @@ while True:
 
     if timeStatus:
         pygame.gfxdraw.aacircle(
-            bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_GoodColor
+            bg, dotsize + 5, displayHeight - dotsize - 5, dotsize, NTP_GoodColor
         )
         pygame.gfxdraw.filled_circle(
-            bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_GoodColor
+            bg, dotsize + 5, displYHeight - dotsize - 5, dotsize, NTP_GoodColor
         )
     else:
         pygame.gfxdraw.aacircle(
-            bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_BadColor
+            bg, dotsize + 5, displayHeight - dotsize - 5, dotsize, NTP_BadColor
         )
         pygame.gfxdraw.filled_circle(
-            bg, dotsize + 5, bg.get_height() - dotsize - 5, dotsize, NTP_BadColor
+            bg, dotsize + 5, displayHeight - dotsize - 5, dotsize, NTP_BadColor
         )
 
     # Render our digital clock
@@ -257,7 +265,7 @@ while True:
     bg.blit(ipTxt, ipTxt.get_rect())
 
     # This sets the frame rate
-    pygame.time.Clock().tick(60)
+    pygame.time.Clock().tick(30)
 
     for event in pygame.event.get():
         if event.type == QUIT:
