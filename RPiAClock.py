@@ -7,11 +7,10 @@ import socket
 import configparser
 import logging
 import datetime
-
 import pygame.gfxdraw
 
 logging.basicConfig(
-    level=logging.WARNING,
+    level = logging.WARNING,
     filename="RPiclock.log",
     filemode="w",
     format="%(name)s - %(levelname)s - %(message)s - %(asctime)s",
@@ -85,25 +84,19 @@ txthmy = int(ycenter)
 clockfont = pygame.font.Font(None, digiclocksize)
 ipFont = pygame.font.Font(None, 30)
 
-
 def polar_to_X_seconds(angle):
     return xclockpos - (int(seconds_radius * (math.cos(math.radians((angle) + 90)))))
-
 
 def polar_to_Y_seconds(angle):
     return ycenter - (int(seconds_radius * (math.sin(math.radians((angle) + 90)))))
 
-
 # Equations for hour markers
-
 
 def polar_to_X_hours(angle):
     return xclockpos - (int(hour_radius * (math.cos(math.radians((angle) + 90)))))
 
-
 def polar_to_Y_hours(angle):
     return ycenter - (int(hour_radius * (math.sin(math.radians((angle) + 90)))))
-
 
 def rotate(origin, points, angle):
     ox, oy = origin
@@ -124,7 +117,6 @@ def rotate(origin, points, angle):
         rotatedPoints.append((qx, qy))
 
     return rotatedPoints
-
 
 ipTxt = ipFont.render(ipAddress, True, ipTxtColor)
 
@@ -161,7 +153,6 @@ while True:
 
     # Display the logo
     bg.blit(image, imageXY)
-
 
     current_time = datetime.datetime.now()
     float_seconds = float(current_time.strftime("%S.%f"))
@@ -221,7 +212,7 @@ while True:
 
     # NTP warning flag
     counter += 1
-    if counter == 3600:
+    if counter == 1800:
         chronyc = os.popen("chronyc -c tracking").read().split(",")
         lastTimeUpdate = time.time() - float(chronyc[3])
         if lastTimeUpdate < 3600:
@@ -240,7 +231,7 @@ while True:
             bg, dotsize + 5, displayHeight - dotsize - 5, dotsize, NTP_GoodColor
         )
         pygame.gfxdraw.filled_circle(
-            bg, dotsize + 5, displYHeight - dotsize - 5, dotsize, NTP_GoodColor
+            bg, dotsize + 5, displayHeight - dotsize - 5, dotsize, NTP_GoodColor
         )
     else:
         pygame.gfxdraw.aacircle(
