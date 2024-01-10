@@ -11,7 +11,7 @@ import pygame.gfxdraw
 
 logging.basicConfig(
     level = logging.WARNING,
-    filename="RPiclock.log",
+    filename="RPiAClock.log",
     filemode="w",
     format="%(name)s - %(levelname)s - %(message)s - %(asctime)s",
 )
@@ -29,7 +29,7 @@ timeStatus = False
 counter = 0
 
 # Initialize the pygame class
-logging.info("Start RPiclock")
+logging.warning("Start RPiclock")
 pygame.display.init()
 pygame.font.init()
 
@@ -43,7 +43,9 @@ bg = pygame.display.set_mode(
     tuple(map(int, config["Display"]["Resolution"].split(",")))
 )
 pygame.mouse.set_visible(False)
-
+BGimage = pygame.image.load('7j7yt7w-asset-mezzanine-16x9-9b5EkFI.jpg')
+# BGimage = pygame.image.load('nkWwybQ-asset-mezzanine-16x9-mlYP1ye.jpg')
+# BGimage.set_alpha(64)
 image = pygame.image.load(config["Logo"]["Logo_Image"])
 
 # Change color to preference (R,G,B) 255 max value
@@ -66,7 +68,7 @@ displayWidth = bg.get_width()
 digiclocksize = int(displayHeight / 4.5)
 digiclockspace = int(displayHeight / 10.5)
 dotsize = int(displayHeight / 90)
-hour_radius = displayHeight / 2.5
+hour_radius = displayHeight / 2.2
 seconds_radius = hour_radius - (displayHeight / 26)
 handWidth = (displayHeight * 0.02)
 
@@ -81,7 +83,7 @@ xcenter = int(displayWidth / 2)
 txthmy = int(ycenter)
 
 # Fonts
-clockfont = pygame.font.Font(None, digiclocksize)
+clockfont = pygame.font.SysFont(None, digiclocksize)
 ipFont = pygame.font.Font(None, 30)
 
 def polar_to_X_seconds(angle):
@@ -151,8 +153,6 @@ while True:
 
     bg.fill(bgcolor)
 
-    # Display the logo
-    bg.blit(image, imageXY)
 
     current_time = datetime.datetime.now()
     float_seconds = float(current_time.strftime("%S.%f"))
@@ -165,6 +165,12 @@ while True:
     minuteAngle = int_minutes * 6 + int_seconds / 10
     hourAngle = int_hours * 30 + int_minutes / 2
 
+    # Display the logo
+    bg.blit(BGimage, [0, 0])
+    BGimage.set_alpha(64)
+    bg.blit(image, imageXY)
+
+    # Display the Analog Clock
     rotatedSecondHand = rotate((xclockpos, ycenter), secondHand, secondAngle + 180)
     rotatedMinuteHand = rotate((xclockpos, ycenter), minuteHand, minuteAngle + 180)
     rotatedHourHand = rotate((xclockpos, ycenter), hourHand, hourAngle + 180)
