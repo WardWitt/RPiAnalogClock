@@ -21,7 +21,7 @@ base_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Load configuration
 config = configparser.ConfigParser()
-config.read(base_dir + "/RPiclock.ini")
+config.read(base_dir + "/RPiAclock.ini")
 
 # NTP status
 timeStatus = False
@@ -43,13 +43,10 @@ bg = pygame.display.set_mode(
     tuple(map(int, config["Display"]["Resolution"].split(",")))
 )
 pygame.mouse.set_visible(False)
-BGimage = pygame.image.load('7j7yt7w-asset-mezzanine-16x9-9b5EkFI.jpg')
-# BGimage = pygame.image.load('nkWwybQ-asset-mezzanine-16x9-mlYP1ye.jpg')
-# BGimage.set_alpha(64)
-image = pygame.image.load(config["Logo"]["Logo_Image"])
+BGimage = pygame.image.load(config["Image"]["Background_Image"])
+LogoImage = pygame.image.load(config["Image"]["Logo_Image"])
 
 # Change color to preference (R,G,B) 255 max value
-bgcolor = tuple(map(int, config["Color"]["Background_Color"].split(",")))
 clockcolor = tuple(map(int, config["Color"]["Second_Color"].split(",")))
 hourcolor = tuple(map(int, config["Color"]["Hour_Color"].split(",")))
 secondHandColor = tuple(map(int, config["Color"]["Second_Hand_Color"].split(",")))
@@ -73,7 +70,6 @@ seconds_radius = hour_radius - (displayHeight / 26)
 handWidth = (displayHeight * 0.02)
 
 # Coordinates of items on display
-# xclockpos = int(bg.get_width()*0.2875)
 xclockpos = int(displayWidth / 2)
 ycenter = int(displayHeight / 2)
 xcenter = int(displayWidth / 2)
@@ -123,7 +119,7 @@ def rotate(origin, points, angle):
 ipTxt = ipFont.render(ipAddress, True, ipTxtColor)
 
 # Logo position
-imageXY = image.get_rect(
+imageXY = LogoImage.get_rect(
     centerx=xclockpos, centery=ycenter + int(seconds_radius / 2))
 
 secondHand = [
@@ -148,11 +144,10 @@ hourHand = [
 
 ######################### Main program loop. ####################################
 
+clock = pygame.time.Clock()
+
 while True:
     pygame.display.update()
-
-    bg.fill(bgcolor)
-
 
     current_time = datetime.datetime.now()
     float_seconds = float(current_time.strftime("%S.%f"))
@@ -165,10 +160,9 @@ while True:
     minuteAngle = int_minutes * 6 + int_seconds / 10
     hourAngle = int_hours * 30 + int_minutes / 2
 
-    # Display the logo
+    # Display the logo and background image
     bg.blit(BGimage, [0, 0])
-    BGimage.set_alpha(64)
-    bg.blit(image, imageXY)
+    bg.blit(LogoImage, imageXY)
 
     # Display the Analog Clock
     rotatedSecondHand = rotate((xclockpos, ycenter), secondHand, secondAngle + 180)
@@ -221,7 +215,7 @@ while True:
     if counter == 1800:
         chronyc = os.popen("chronyc -c tracking").read().split(",")
         lastTimeUpdate = time.time() - float(chronyc[3])
-        if lastTimeUpdate < 3600:
+        if lastTimeUpdate < 4000:
             timeStatus = True
             logging.info("Last valad time update %f seconds ago",
                          lastTimeUpdate)
@@ -261,8 +255,9 @@ while True:
     # Display IP address
     bg.blit(ipTxt, ipTxt.get_rect())
 
-    # This sets the frame rate
-    pygame.time.Clock().tick(30)
+    # # This sets the frame rate
+    clock.tick(12)
+    # print(clock.get_fps())
 
     for event in pygame.event.get():
         if event.type == QUIT:
