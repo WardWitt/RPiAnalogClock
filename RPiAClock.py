@@ -37,7 +37,7 @@ pygame.font.init()
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # connect() for UDP doesn't send packets
 s.connect(("8.8.8.8", 0))
-ipAddress = s.getsockname()[0]
+ipAddress = socket.gethostname() + ' ' + s.getsockname()[0]
 
 bg = pygame.display.set_mode(
     tuple(map(int, config["Display"]["Resolution"].split(",")))
