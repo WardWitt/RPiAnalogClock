@@ -6,9 +6,9 @@ After=network-online.target
 [Service]
 Type=idle
 User=admin
-WorkingDirectory=/home/admin/Analog
+WorkingDirectory=/home/admin/RPiAnalogClock
 ExecStartPre=/bin/sh -c 'until ping -c1 google.com; do sleep 1; done;'
-ExecStart=sudo /usr/bin/python3 /home/admin/Analog/RPiAClock.py
+ExecStart=/usr/bin/python3 /home/admin/RPiAnalogClock/RPiAClock.py
 Restart=always
 RestartSec=120
 

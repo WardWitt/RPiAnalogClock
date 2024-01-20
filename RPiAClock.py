@@ -21,7 +21,7 @@ base_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Load configuration
 config = configparser.ConfigParser()
-config.read(base_dir + "/RPiAclock.ini")
+config.read(base_dir + "/RPiAClock.ini")
 
 # NTP status
 timeStatus = False
@@ -256,16 +256,16 @@ while True:
     bg.blit(ipTxt, ipTxt.get_rect())
 
     # # This sets the frame rate
-    clock.tick(12)
+    clock.tick(30)
     # print(clock.get_fps())
 
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        # Pressing q+t to exit
-        elif event.type == KEYDOWN:
-            if event.key == K_q and K_t:
-                pygame.quit()
-                #          GPIO.cleanup()
-                sys.exit()
+    # for event in pygame.event.get():
+    #     if event.type == QUIT:
+    #         pygame.quit()
+    #         sys.exit()
+    #     # Pressing q+t to exit
+    #     elif event.type == KEYDOWN:
+    #         if event.key == K_q and K_t:
+    #             pygame.quit()
+    #             #          GPIO.cleanup()
+    #             sys.exit()
