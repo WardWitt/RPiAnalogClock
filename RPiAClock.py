@@ -61,8 +61,8 @@ NTP_BadColor = tuple(map(int, config["Color"]["NTP_Bad_Color"].split(",")))
 # Scaling to the right size for the clock display
 displayHeight = bg.get_height()
 displayWidth = bg.get_width()
-digiclocksize = int(displayHeight / 4.5)
-digiclockspace = int(displayHeight / 10.5)
+digiclocksize = int(displayHeight / 3.35)
+# digiclockspace = int(displayHeight / 10.5)
 dotsize = int(displayHeight / 90)
 hour_radius = displayHeight / 2.2
 seconds_radius = hour_radius - (displayHeight / 26)
