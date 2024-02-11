@@ -31,6 +31,7 @@ counter = 0
 logging.warning("Start RPiclock")
 pygame.display.init()
 pygame.font.init()
+pygame.event.set_allowed(None)
 
 # Figure out our IP Address
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -42,8 +43,8 @@ bg = pygame.display.set_mode(
     tuple(map(int, config["Display"]["Resolution"].split(",")))
 )
 pygame.mouse.set_visible(False)
-BGimage = pygame.image.load(config["Image"]["Background_Image"])
-LogoImage = pygame.image.load(config["Image"]["Logo_Image"])
+BGimage = pygame.image.load(config["Image"]["Background_Image"]).convert()
+LogoImage = pygame.image.load(config["Image"]["Logo_Image"]).convert_alpha()
 
 # Change color to preference (R,G,B) 255 max value
 clockcolor = tuple(map(int, config["Color"]["Second_Color"].split(",")))
