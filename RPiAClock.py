@@ -215,7 +215,7 @@ while True:
     if counter == 1800:
         chronyc = os.popen("chronyc -c tracking").read().split(",")
         lastTimeUpdate = time.time() - float(chronyc[3])
-        if lastTimeUpdate < 4000:
+        if lastTimeUpdate < 10000:
             timeStatus = True
             logging.info("Last valad time update %f seconds ago",
                          lastTimeUpdate)
