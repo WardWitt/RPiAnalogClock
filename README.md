@@ -5,10 +5,6 @@ Python3 Clock
 Raspberry Pi OS (other) > Raspberry Pi OS Lite 64-bit
 Attach a keyboard before first boot, select “Other” when presented with the keyboard configuration and choose the US layout. Enter user and password (admin is suggested).
 
-## Fixed IP address if needed
-    sudo nano /etc/dhcpcd.conf
-Edit and uncomment the “Example static IP configuration” to suit your environment.
-
 ## Upgrade to latest OS
     sudo apt-get update
     sudo apt-get upgrade
@@ -21,6 +17,7 @@ Edit and uncomment the “Example static IP configuration” to suit your enviro
 
 ## Install pygame
     sudo apt-get install python3-pygame
+    sudo apt-get install libegl-dev
 
 ## Install chrony
     sudo apt-get install chrony
