@@ -5,7 +5,7 @@ Python3 Clock
 Raspberry Pi OS (other) > Raspberry Pi OS Lite 64-bit
 Attach a keyboard before first boot, select “Other” when presented with the keyboard configuration and choose the US layout. Enter user and password (admin is suggested).
 
-## Fixed IP address
+## Fixed IP address if needed
     sudo nano /etc/dhcpcd.conf
 Edit and uncomment the “Example static IP configuration” to suit your environment.
 
@@ -13,8 +13,8 @@ Edit and uncomment the “Example static IP configuration” to suit your enviro
     sudo apt-get update
     sudo apt-get upgrade
 
-## Enable SSH & I2C
-    sudo rasp-config > 3 > I2 Enable SSH & I5 Enable I2C
+## Enable SSH
+    sudo rasp-config > 3 > I2 Enable SSH
 
 ## Set timezone
     sudo raspi-config > 5 > L2 Timezone
@@ -24,11 +24,6 @@ Edit and uncomment the “Example static IP configuration” to suit your enviro
 
 ## Install chrony
     sudo apt-get install chrony
-
-## Copy the app to the RaspberryPi
-From your PC
-    scp ~/Desktop/rpi-clock.zip admin@172.18.18.237:~ 
-    unzip rpi-clock.zip
 
 ## Configure systemd
     sudo cp /home/admin/rpi-clock/RPiclock.service /lib/systemd/system
